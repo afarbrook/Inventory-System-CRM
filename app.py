@@ -1,11 +1,8 @@
 import streamlit as st
 from utils.excel import load_inventory
 from utils.metrics import compute_metrics
+from utils.alerts import get_expiring_warranties
 
-st.set_page_config(
-    page_title="Inventory Dashboard",
-    layout="wide"
-)
 
 st.title("📦 Inventory Dashboard")
 
@@ -27,3 +24,17 @@ st.bar_chart(metrics["by_category"])
 
 st.subheader("Recently Added Items")
 st.dataframe(metrics["recent_items"], use_container_width=True)
+
+#alert system in app
+expiring_df = get_expiring_warranties(df, days=30)
+
+if not expiring_df.empty:
+    st.warning(
+        f"⚠️ {len(expiring_df)} warranties expiring in next 30 days!"
+    )
+    st.dataframe(expiring_df)
+st.set_page_config(
+    page_title="Inventory Dashboard",
+    layout="wide"
+)
+
