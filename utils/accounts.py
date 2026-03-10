@@ -1,7 +1,6 @@
 import bcrypt
 import pandas as pd
 from pathlib import Path
-
 ACCOUNT_PATH = Path("data/LoginInfo.xlsx") #path for login info
 SHEET_NAME = "LoginInfo"
 
@@ -27,9 +26,9 @@ def createAccount(username, password):
             engine="openpyxl"
         )
     else:
-        df = pd.DataFrame(columns=["Username", "Password"])
+        df = pd.DataFrame(columns=["Username", "Password", "Role"])
 
-    newRow = pd.DataFrame([{"Username":username, "Password":hashPassword(password.encode())}])
+    newRow = pd.DataFrame([{"Username":username, "Password":hashPassword(password.encode()), "Role":"user"}])
     df = pd.concat([df, newRow],ignore_index=True)
     df.to_excel(ACCOUNT_PATH, index=False, engine="openpyxl")
 
