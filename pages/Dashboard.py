@@ -3,13 +3,17 @@ from utils.excel import load_inventory
 from utils.metrics import compute_metrics
 from utils.alerts import get_expiring_warranties
 
+def reset_app():
+    st.session_state["logged in"] = False
+    del st.session_state["username"]
+
+st.button("Log Out", on_click=reset_app)
 
 st.title("📦 Inventory Dashboard")
 
 if not st.session_state["logged in"]:
     st.error("Please log in.")
     st.stop()
-
 
 
 df = load_inventory()
