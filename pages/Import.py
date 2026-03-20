@@ -6,7 +6,9 @@ from utils.importer import (
     normalize_import_df
 )
 from utils.excel import save_inventory, load_inventory
-
+if not st.session_state["logged in"]:
+    st.error("Please log in.")
+    st.stop()
 st.header("📥 Bulk Import Inventory")
 
 uploaded_file = st.file_uploader(

@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 from utils.excel import load_inventory
+
+if not st.session_state["logged in"]:
+    st.error("Please log in.")
+    st.stop()
+
+
 df = load_inventory()
 st.header("🔍 Inventory Search")
 
