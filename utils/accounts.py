@@ -1,10 +1,14 @@
 import bcrypt
 import pandas as pd
+import streamlit as st
 from pathlib import Path
 ACCOUNT_PATH = Path("data/LoginInfo.xlsx") #path for login info
 SHEET_NAME = "LoginInfo"
 
-
+#----------------------------------------------------------------------------
+#login(username, password) -- checks if credentials are correct and return true if they are
+#@param -- username is the username, password is the password)
+#----------------------------------------------------------------------------
 def login(username, password) -> bool:
     if(ACCOUNT_PATH.exists()):
         df = pd.read_excel(
@@ -37,3 +41,13 @@ def hashPassword(password):
     salt = bcrypt.gensalt(rounds=10)
     hashed = bcrypt.hashpw(password, salt)
     return hashed.decode()
+
+def checkAdmin():
+    df = pd.read_excel( #user account database
+            ACCOUNT_PATH,
+            engine="openpyxl"
+        )
+    username = st.session_state["username"] #username of current user
+    accountRow = df[df["Username"] == username] #users row if exists
+    role = accountRow.iloc[0]["Role"]
+    return role == "admin"

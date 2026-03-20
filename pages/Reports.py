@@ -3,6 +3,10 @@ import pandas as pd
 from utils.reports import generate_report
 from utils.excel import load_inventory
 
+if not st.session_state["logged in"]:
+    st.error("Please log in.")
+    st.stop()
+
 st.header("📄 Inventory Reports")
 df = load_inventory()
 
