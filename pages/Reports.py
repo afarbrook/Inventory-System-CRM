@@ -11,7 +11,7 @@ st.header("📄 Inventory Reports")
 df = load_inventory()
 
 categories = ["All"] + sorted(df["Category"].dropna().unique().tolist())
-
+ 
 col1, col2, col3 = st.columns(3)
 
 with col1:
