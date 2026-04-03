@@ -1,6 +1,11 @@
 import pandas as pd
 import streamlit as st
 
+"""
+compute_metrics(df) -- computes metrics for the inventory DataFrame
+@param -- df is the DataFrame containing the inventory data
+@return -- a dictionary of computed metrics
+"""
 @st.cache_data
 def compute_metrics(df: pd.DataFrame):
     return {

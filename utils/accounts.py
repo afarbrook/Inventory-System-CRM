@@ -5,10 +5,10 @@ from pathlib import Path
 ACCOUNT_PATH = Path("data/LoginInfo.xlsx") #path for login info
 SHEET_NAME = "LoginInfo"
 
-#----------------------------------------------------------------------------
-#login(username, password) -- checks if credentials are correct and return true if they are
-#@param -- username is the username, password is the password)
-#----------------------------------------------------------------------------
+"""
+login(username, password) -- checks if credentials are correct and return true if they are
+@param -- username is the username, password is the password)
+"""
 def login(username, password) -> bool:
     if(ACCOUNT_PATH.exists()):
         df = pd.read_excel(
@@ -22,7 +22,10 @@ def login(username, password) -> bool:
         return bcrypt.checkpw(password.encode(), possiblePassword.encode())
     return False
 
-
+"""
+createAccount(username, password) -- creates a new user account with the given username and password
+@param -- username is the username, password is the password)
+"""
 def createAccount(username, password):
     if(ACCOUNT_PATH.exists()):
         df = pd.read_excel(
@@ -36,12 +39,17 @@ def createAccount(username, password):
     df = pd.concat([df, newRow],ignore_index=True)
     df.to_excel(ACCOUNT_PATH, index=False, engine="openpyxl")
 
-   
+"""
+hashPassword(password) -- hashes the given password
+@param -- password is the password to hash)
+"""
 def hashPassword(password):
     salt = bcrypt.gensalt(rounds=10)
     hashed = bcrypt.hashpw(password, salt)
     return hashed.decode()
-
+"""
+checkAdmin(username, password) -- checks if the user is an admin
+"""
 def checkAdmin():
     df = pd.read_excel( #user account database
             ACCOUNT_PATH,

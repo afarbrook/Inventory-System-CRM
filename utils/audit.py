@@ -4,7 +4,10 @@ from datetime import datetime
 import streamlit as st
 
 AUDIT_PATH = Path("data/AuditLog.xlsx")
-
+"""
+loadLog() -- loads the audit log from the Excel file
+@return -- a DataFrame containing the audit log, or None if the file doesn't exist
+"""
 def loadLog() -> pd.DataFrame:
     if(AUDIT_PATH.exists()):
         df = pd.read_excel(
@@ -15,7 +18,10 @@ def loadLog() -> pd.DataFrame:
         
     return None
 
-
+"""
+detectChanges(original, changed) -- detects changes between two DataFrames
+@param -- original is the original DataFrame, changed is the modified DataFrame
+"""
 def detectChanges(original, changed):
     changes = []
     for row in original.index:
@@ -35,7 +41,10 @@ def detectChanges(original, changed):
                     "New_Value": new.item() if hasattr(new, 'item') else new
                 })
     return changes 
-
+"""
+log(change) -- logs a change to the audit log
+@param -- change is a dictionary containing the change details
+"""
 def log(change):
     df = loadLog()
     if df is None:

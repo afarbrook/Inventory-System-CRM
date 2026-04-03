@@ -36,13 +36,13 @@ st.subheader("Recently Added Items")
 st.dataframe(metrics["recent_items"], use_container_width=True)
 
 #alert system in app
-expiring_df = get_expiring_warranties(df, days=30)
+expiringWarranties = get_expiring_warranties(df, days=30)
+if(expiringWarranties.empty):
+    st.toast("No urgent warranties!")
+else:
+    for _, row in expiringWarranties.iterrows():
+        st.toast(body=row["ItemName"] + " Warranty Expiring: " + row["WarrantyExpiration"], duration="long")
 
-if not expiring_df.empty:
-    st.warning(
-        f"⚠️ {len(expiring_df)} warranties expiring in next 30 days!"
-    )
-    st.dataframe(expiring_df)
 st.set_page_config(
     page_title="Inventory Dashboard",
     layout="wide"

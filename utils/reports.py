@@ -1,5 +1,10 @@
 import pandas as pd
 
+"""
+generate_report(df, category, low_stock_only, start_date, end_date) -- generates a report based on the given criteria
+@param -- df is the DataFrame containing the inventory data, category is the category to filter by, low_stock_only is a flag to include only low-stock items, start_date is the start date for filtering, end_date is the end date for filtering
+@return -- a DataFrame containing the generated report
+"""
 def generate_report(
     df: pd.DataFrame,
     category: str | None = None,
