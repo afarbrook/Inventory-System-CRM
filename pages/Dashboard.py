@@ -17,7 +17,7 @@ if not st.session_state["logged in"]:
 
 
 df = load_inventory()
-
+st.write(df)
 if df.empty:
     st.warning("No inventory data found.")
     st.stop()
