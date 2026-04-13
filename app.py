@@ -4,10 +4,23 @@ from utils.accounts import(
     createAccount,
     checkAdmin
 )
+import psycopg2
+import pandas as pd
 
 if("logged in" not in st.session_state):
     st.session_state["logged in"] = False
 
+@st.cache_resource
+def get_connection():
+    return psycopg2.connect(
+        host=st.secrets["SUPABASE_HOST"],
+        database=st.secrets["SUPABASE_DB"],
+        user=st.secrets["SUPABASE_USER"],
+        password=st.secrets["SUPABASE_PASSWORD"],
+        port=st.secrets["SUPABASE_PORT"]
+    )
+
+conn = get_connection()
 
 def showLoginPage():
     st.title("Welcome! Please log in.")
@@ -29,6 +42,12 @@ def showLoginPage():
             else:
                 st.error("Invalid username of password. Please try again")
         if submit_create:
+            if(len(username) == 0 or len(password) == 0):
+                st.error("Username and password cannot be empty.")
+                return
+            if(login(username, password)):
+                st.error("Username already exists. Please choose a different username.")
+                return
             createAccount(username, password)
             st.session_state["logged in"] = True
             st.session_state["username"]  = username
