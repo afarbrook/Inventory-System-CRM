@@ -37,8 +37,8 @@ def detectChanges(original, changed):
                     "Action": "changed",
                     "Row_ID": row,
                     "Field": col,
-                    "Old_Value": old.item() if hasattr(old, 'item') else old,  # convert np types to python native
-                    "New_Value": new.item() if hasattr(new, 'item') else new
+                    "Old_Value": str(old.item()) if hasattr(old, 'item') else old,  # convert np types to python native
+                    "New_Value": str(new.item()) if hasattr(new, 'item') else new
                 })
     return changes 
 """
