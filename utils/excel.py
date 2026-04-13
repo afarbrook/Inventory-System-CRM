@@ -3,7 +3,7 @@ from pathlib import Path
 from filelock import FileLock
 import streamlit as st
 
-INVENTORY_PATH = Path("data/Inventory.xlsx")
+INVENTORY_PATH = Path("data/inventory.xlsx")
 SHEET_NAME = "InventoryData"
 LOCK_PATH = INVENTORY_PATH.with_suffix(".lock")
 
