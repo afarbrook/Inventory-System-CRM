@@ -7,7 +7,7 @@ if not st.session_state["logged in"]:
     st.stop()
 
 df = load_inventory()
-
+st.set_page_config(page_title="Inventory Search", layout="wide")
 st.title("Inventory Search")
 st.divider()
 
@@ -28,7 +28,7 @@ filtered_df = df.copy()
 
 if search_query:
     query = search_query.lower()
-    search_cols = ["ItemID", "ItemName", "Location", "Category"]
+    search_cols = ["ItemID", "ItemName", "Location", "Category", "AssignedTo"]
     filtered_df = filtered_df[
         filtered_df[search_cols].apply(
             lambda row: query in " ".join(row.astype(str).str.lower()), axis=1

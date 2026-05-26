@@ -9,7 +9,6 @@ if("logged in" not in st.session_state):
     st.session_state["logged in"] = False
 
 
-
 def showLoginPage():
     st.title("Welcome! Please log in.")
     with st.form("login_form"):
@@ -47,6 +46,11 @@ if not st.session_state["logged in"]:
     pg = st.navigation({"Account": [st.Page(showLoginPage, title="Log In")]})
     pg.run()
     st.stop()
+
+st.sidebar.write(f"👤 {st.session_state['username']}")
+st.sidebar.write("🔑 Admin" if st.session_state["admin"] else "👤 User")
+
+
 # --------------pages set up --------------------------------------
 home      = st.Page("app.py",                title="Log In Page")
 dashboard = st.Page("pages/Dashboard.py",    title="Dashboard")
@@ -55,9 +59,10 @@ edit      = st.Page("pages/Edit.py",         title="Edit Inventory")
 imports   = st.Page("pages/Import.py",       title="Import File")
 reports   = st.Page("pages/Reports.py",      title="Extract Reports")
 search    = st.Page("pages/Search.py",       title="Search Database")
+users     = st.Page("pages/Users.py",        title="Users")
 # -----------------------------------------------------------------
 if st.session_state["admin"]:
-    pg = st.navigation([dashboard, auditLog, edit, imports, reports, search])
+    pg = st.navigation([dashboard, auditLog, edit, imports, reports, search, users])
 else:
     pg = st.navigation([dashboard, imports, reports, search])
 pg.run()

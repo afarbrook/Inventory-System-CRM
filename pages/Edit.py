@@ -25,11 +25,20 @@ df = load_inventory() #full inventory
 st.title("Database Edit")
 
 newDF = st.data_editor(
-    df, 
+    df,
     width="stretch",
     num_rows="dynamic",
-    key="editor_key"
-    )
+    key="editor_key",
+    column_config={
+        "AssignedTo": st.column_config.TextColumn(
+            "Assigned To",
+            help="Username of the person this item is assigned to",
+        ),
+        "DateAdded": st.column_config.DateColumn("Date Added"),
+        "LastUpdated": st.column_config.DateColumn("Last Updated"),
+        "WarrantyExpiration": st.column_config.DateColumn("Warranty Expiration"),
+    }
+)
 
 if st.button("Save All Changes"):
     changes = detectChanges(df, newDF)

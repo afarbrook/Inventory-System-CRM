@@ -13,16 +13,12 @@ _load_inventory(path, last_modified) -- loads the inventory data from the Excel 
 """
 @st.cache_data
 def _load_inventory(path: Path, last_modified: float) -> pd.DataFrame:
-    df = pd.read_excel(
-        path,
-        sheet_name=SHEET_NAME,
-        engine="openpyxl"
-    )
+    df = pd.read_excel(path, sheet_name=SHEET_NAME, engine="openpyxl")
 
-    # Convert date columns properly
     df["DateAdded"] = pd.to_datetime(df["DateAdded"], errors="coerce")
     df["LastUpdated"] = pd.to_datetime(df["LastUpdated"], errors="coerce")
     df["WarrantyExpiration"] = pd.to_datetime(df["WarrantyExpiration"], errors="coerce")
+    df["AssignedTo"] = df["AssignedTo"].fillna("").astype(str)  # add this
 
     return df
 """
@@ -34,7 +30,7 @@ Calls on helper function _load_inventory to load the data and cache it based on 
 def load_inventory() -> pd.DataFrame:
     if not INVENTORY_PATH.exists():
         return pd.DataFrame(columns=[
-            "ItemID", "ItemName", "Category", "Quantity", "Location",
+            "ItemID", "ItemName", "Category", "Quantity", "Location", "AssignedTo", 
             "DateAdded", "LastUpdated", "Brand", "ModelNumber",
             "SerialNumber", "Cost", "Status",
             "WarrantyExpiration", "WarrantyProvider", "AlertSent"
@@ -72,3 +68,4 @@ def append_inventory(existing: pd.DataFrame, new: pd.DataFrame) -> pd.DataFrame:
     combined = pd.concat([existing, new], ignore_index=True)
     combined = combined.drop_duplicates(subset="ItemID", keep="last")
     return combined
+

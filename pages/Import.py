@@ -10,8 +10,30 @@ from utils.excel import save_inventory, load_inventory
 if not st.session_state["logged in"]:
     st.error("Please log in.")
     st.stop()
-    
+st.set_page_config(page_title="Import Data", layout="wide")
 st.header("📥 Bulk Import Inventory")
+
+with st.expander("📋 Required & Optional Columns", expanded=True):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Required** ✅")
+        st.markdown("""
+        - `ItemID` — Unique identifier (e.g. ITM0001)
+        - `ItemName` — Name of the item
+        - `Category` — Type of item
+        - `Quantity` — Number of units
+        """)
+    with col2:
+        st.markdown("**Optional** _(leave blank if unknown)_")
+        st.markdown("""
+        - `Location` — Physical location
+        - `AssignedTo` — Assigned employee
+        - `Brand` / `ModelNumber` / `SerialNumber`
+        - `Cost` — Purchase price
+        - `Status` — e.g. Active, In Repair, Retired
+        - `WarrantyExpiration` — Date (MM/DD/YYYY)
+        - `WarrantyProvider` — Warranty contact
+        """)
 
 uploaded_file = st.file_uploader(
     "Upload CSV or Excel",
@@ -28,7 +50,7 @@ if uploaded_file:
     missing_cols = validate_import_df(import_df)
 
     if missing_cols:
-        st.error(f"Missing required columns: {missing_cols}")
+        st.error(f"❌ Your file is missing required column(s): {', '.join(f'`{c}`' for c in missing_cols)}")
         st.stop()
 
     import_df = normalize_import_df(import_df)

@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 ACCOUNT_PATH = Path("data/LoginInfo.xlsx") #path for login info
-SHEET_NAME = "LoginInfo"
+SHEET_NAME = "Sheet1"
 
 """
 login(username, password) -- checks if credentials are correct and return true if they are
@@ -59,3 +59,25 @@ def checkAdmin():
     accountRow = df[df["Username"] == username] #users row if exists
     role = accountRow.iloc[0]["Role"]
     return role == "admin"
+
+
+@st.cache_data
+def _load_users(path: Path, last_modified: float) -> pd.DataFrame:
+    df = pd.read_excel(
+        path,
+        sheet_name=SHEET_NAME,
+        engine="openpyxl",
+        usecols=["Username", "Role"]
+    )
+
+    return df
+
+def load_users() -> pd.DataFrame:
+    if not ACCOUNT_PATH.exists():
+        return pd.DataFrame(columns=[
+            "Username", "Role"
+        ])
+    return _load_users(
+        ACCOUNT_PATH,
+        ACCOUNT_PATH.stat().st_mtime
+    )

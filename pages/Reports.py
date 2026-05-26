@@ -6,7 +6,7 @@ from utils.excel import load_inventory
 if not st.session_state["logged in"]:
     st.error("Please log in.")
     st.stop()
-
+st.set_page_config(page_title="Inventory Reports", layout="wide")
 st.header("📄 Inventory Reports")
 df = load_inventory()
 
