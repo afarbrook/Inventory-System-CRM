@@ -31,22 +31,9 @@ def load_uploaded_file(uploaded_file) -> pd.DataFrame:
             return pd.read_csv(uploaded_file, encoding="latin-1")
     elif uploaded_file.name.endswith(".xlsx"):
         xl = pd.ExcelFile(uploaded_file)
-
-        # single sheet — just read it
-        if len(xl.sheet_names) == 1:
-            df = pd.read_excel(uploaded_file, engine="openpyxl")
-            return df.rename(columns=COLUMN_RENAMES)
-
-        # two sheets — merge on ItemID
-        sheet1 = xl.parse(xl.sheet_names[0])
-        sheet2 = xl.parse(xl.sheet_names[1])
-
-        # drop columns that exist in both to avoid _x/_y suffixes
-        dupe_cols = [c for c in sheet2.columns if c in sheet1.columns and c != "ItemID"]
-        sheet2 = sheet2.drop(columns=dupe_cols)
-
-        merged = pd.merge(sheet1, sheet2, on="ItemID", how="outer")
-        return merged.rename(columns=COLUMN_RENAMES)
+        sheet = xl.sheet_names[1] if len(xl.sheet_names) > 1 else xl.sheet_names[0]
+        df = xl.parse(sheet)
+        return df.rename(columns=COLUMN_RENAMES)
     else:
         raise ValueError("Unsupported file type. Please upload a .csv or .xlsx file.")
 
