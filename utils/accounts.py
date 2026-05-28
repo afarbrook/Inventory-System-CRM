@@ -5,6 +5,7 @@ from utils.excel import get_supabase
 
 def login(username, password) -> bool:
     supabase = get_supabase()
+    st.write(supabase.rest_url)  # temporary debug
     response = supabase.table("Login_info").select("Password").eq("Username", username).execute()
     if not response.data:
         return False
