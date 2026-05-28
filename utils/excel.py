@@ -12,7 +12,7 @@ def get_supabase() -> Client:
 @st.cache_data(ttl=60)
 def load_inventory() -> pd.DataFrame:
     supabase = get_supabase()
-    response = supabase.table("inventory").select("*").execute()
+    response = supabase.table("Inventory").select("*").execute()
     if not response.data:
         return pd.DataFrame(columns=[
             "ItemID", "ItemName", "Category", "Quantity", "Location", "AssignedTo",
@@ -40,7 +40,7 @@ def save_inventory(df: pd.DataFrame):
             df[col] = df[col].apply(lambda x: x.isoformat() if pd.notna(x) else None)
 
     records = df.where(df.notna(), other=None).to_dict(orient="records")
-    supabase.table("inventory").upsert(records, on_conflict="ItemID").execute()
+    supabase.table("Inventory").upsert(records, on_conflict="ItemID").execute()
     st.cache_data.clear()
 
 def append_inventory(existing: pd.DataFrame, new: pd.DataFrame) -> pd.DataFrame:

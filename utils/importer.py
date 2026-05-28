@@ -96,6 +96,6 @@ def import_df_to_supabase(df: pd.DataFrame):
     batch_size = 500
     for i in range(0, len(records), batch_size):
         batch = records[i:i + batch_size]
-        supabase.table("inventory").upsert(batch, on_conflict="ItemID").execute()
+        supabase.table("Inventory").upsert(batch, on_conflict="ItemID").execute()
 
     st.cache_data.clear()

@@ -5,7 +5,7 @@ from utils.excel import get_supabase
 
 def loadLog() -> pd.DataFrame:
     supabase = get_supabase()
-    response = supabase.table("audit_log").select("*").order("Timestamp", desc=True).execute()
+    response = supabase.table("Audit_log").select("*").order("Timestamp", desc=True).execute()
     if not response.data:
         return pd.DataFrame(columns=["Timestamp", "User", "Action", "Row_ID", "Field", "Old_Value", "New_Value"])
     return pd.DataFrame(response.data)
@@ -68,4 +68,4 @@ def log_action(action: str, detail: str):
 
 def log(change):
     supabase = get_supabase()
-    supabase.table("audit_log").insert(change).execute()
+    supabase.table("Audit_log").insert(change).execute()
