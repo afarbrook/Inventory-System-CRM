@@ -16,7 +16,7 @@ search_query = st.text_input("Search", placeholder="Item name, ID, location, cat
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    category_filter = st.selectbox("Category", ["All"] + sorted(df["Category"].dropna().unique().tolist()))
+    category_filter = st.selectbox("Category", ["All"] + sorted(df["Category"].dropna().astype(str).unique().tolist()))
 
 with col2:
     min_qty = st.number_input("Min Quantity", min_value=0, value=0)
