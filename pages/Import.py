@@ -3,9 +3,10 @@ import pandas as pd
 from utils.importer import (
     load_uploaded_file,
     validate_import_df,
-    normalize_import_df
+    normalize_import_df,
+    import_df_to_supabase
 )
-from utils.excel import save_inventory, load_inventory
+from utils.excel import load_inventory
 
 if not st.session_state["logged in"]:
     st.error("Please log in.")
@@ -47,10 +48,10 @@ if uploaded_file:
         st.error(str(e))
         st.stop()
 
-    missing_cols = validate_import_df(import_df)
+    errors = validate_import_df(import_df)
 
-    if missing_cols:
-        st.error(f"❌ Your file is missing required column(s): {', '.join(f'`{c}`' for c in missing_cols)}")
+    if errors:
+        st.error(f"❌ Your file is missing required column(s): {', '.join(f'`{c}`' for c in errors)}")
         st.stop()
 
     import_df = normalize_import_df(import_df)
@@ -58,24 +59,17 @@ if uploaded_file:
     st.subheader("Preview Import")
     st.dataframe(import_df, use_container_width=True)
 
-    st.warning(
-        f"This will add {len(import_df)} items to the inventory."
-    )
+    # Filter out already-existing ItemIDs
+    inventory_df = load_inventory()
+    existing_ids = set(inventory_df["ItemID"])
+    new_df = import_df[~import_df["ItemID"].isin(existing_ids)]
+    skipped = len(import_df) - len(new_df)
+
+    st.warning(f"This will add {len(new_df)} new items to the inventory.{f' ({skipped} duplicate IDs will be skipped.)' if skipped else ''}")
 
     if st.button("🚀 Import into Inventory"):
-        inventory_df = load_inventory()
-
-        # Prevent duplicate ItemID
-        existing_ids = set(inventory_df["ItemID"])
-        import_df = import_df[~import_df["ItemID"].isin(existing_ids)]
-
-        combined = pd.concat(
-            [inventory_df, import_df],
-            ignore_index=True
-        )
-
-        save_inventory(combined)
-
-        st.success(
-            f"Imported {len(import_df)} new items successfully!"
-        )
+        if new_df.empty:
+            st.error("No new items to import — all ItemIDs already exist in the inventory.")
+        else:
+            import_df_to_supabase(new_df)
+            st.success(f"Imported {len(new_df)} new items successfully!")

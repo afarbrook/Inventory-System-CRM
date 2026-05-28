@@ -1,5 +1,7 @@
 import pandas as pd
 from datetime import datetime
+from utils.excel import get_supabase
+import streamlit as st
 
 REQUIRED_COLUMNS = {
     "ItemID",
@@ -76,6 +78,24 @@ def normalize_import_df(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     if "DateAdded" not in df.columns:
         df["DateAdded"] = datetime.today()
-    df["DateAdded"]  = pd.to_datetime(df["DateAdded"], errors="coerce")
-    df["Quantity"]   = pd.to_numeric(df["Quantity"], errors="coerce").fillna(0).astype(int)
+    df["DateAdded"] = pd.to_datetime(df["DateAdded"], errors="coerce")
+    df["Quantity"] = pd.to_numeric(df["Quantity"], errors="coerce").fillna(0).astype(int)
     return df
+
+def import_df_to_supabase(df: pd.DataFrame):
+    supabase = get_supabase()
+
+    for col in ["DateAdded", "WarrantyExpiration"]:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], errors="coerce")
+            df[col] = df[col].apply(lambda x: x.isoformat() if pd.notna(x) else None)
+
+    df["LastUpdated"] = datetime.now().isoformat()
+    records = df.where(df.notna(), other=None).to_dict(orient="records")
+
+    batch_size = 500
+    for i in range(0, len(records), batch_size):
+        batch = records[i:i + batch_size]
+        supabase.table("inventory").upsert(batch, on_conflict="ItemID").execute()
+
+    st.cache_data.clear()

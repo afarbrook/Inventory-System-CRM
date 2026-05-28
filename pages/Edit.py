@@ -21,7 +21,7 @@ if(not checkAdmin()):
     st.stop()
 
 df = load_inventory() #full inventory
-
+st.set_page_config(page_title="Database Edit", layout="wide")
 st.title("Database Edit")
 
 newDF = st.data_editor(
