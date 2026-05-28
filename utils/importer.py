@@ -31,7 +31,7 @@ def load_uploaded_file(uploaded_file) -> pd.DataFrame:
             return pd.read_csv(uploaded_file, encoding="latin-1")
     elif uploaded_file.name.endswith(".xlsx"):
         xl = pd.ExcelFile(uploaded_file)
-        sheet = xl.sheet_names[1] if len(xl.sheet_names) > 1 else xl.sheet_names[0]
+        sheet = xl.sheet_names[0]
         df = xl.parse(sheet)
         return df.rename(columns=COLUMN_RENAMES)
     else:
