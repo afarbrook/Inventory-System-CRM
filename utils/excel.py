@@ -12,15 +12,26 @@ def get_supabase() -> Client:
 @st.cache_data(ttl=60)
 def load_inventory() -> pd.DataFrame:
     supabase = get_supabase()
-    response = supabase.table("Inventory").select("*").execute()
-    if not response.data:
+    all_rows = []
+    page_size = 1000
+    offset = 0
+    while True:
+        response = supabase.table("Inventory").select("*").order("ItemID").range(offset, offset + page_size - 1).execute()
+        if not response.data:
+            break
+        all_rows.extend(response.data)
+        if len(response.data) < page_size:
+            break
+        offset += page_size
+
+    if not all_rows:
         return pd.DataFrame(columns=[
             "ItemID", "ItemName", "Category", "Quantity", "Location", "AssignedTo",
             "DateAdded", "LastUpdated", "Brand", "ModelNumber",
             "SerialNumber", "Cost", "Status",
             "WarrantyExpiration", "WarrantyProvider", "Notes"
         ])
-    df = pd.DataFrame(response.data)
+    df = pd.DataFrame(all_rows)
     df["DateAdded"] = pd.to_datetime(df["DateAdded"], errors="coerce")
     df["LastUpdated"] = pd.to_datetime(df["LastUpdated"], errors="coerce")
     df["WarrantyExpiration"] = pd.to_datetime(df["WarrantyExpiration"], errors="coerce")

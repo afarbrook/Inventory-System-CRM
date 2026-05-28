@@ -43,6 +43,14 @@ def detectChanges(original, changed):
                 continue
             old = original.at[row, col]
             new = changed.at[row, col]
+
+            # skip if both are null/NaT
+            try:
+                if pd.isna(old) and pd.isna(new):
+                    continue
+            except (TypeError, ValueError):
+                pass
+
             if old != new:
                 changes.append({
                     "Timestamp": datetime.now().isoformat(),

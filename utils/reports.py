@@ -1,10 +1,5 @@
 import pandas as pd
 
-"""
-generate_report(df, category, low_stock_only, start_date, end_date) -- generates a report based on the given criteria
-@param -- df is the DataFrame containing the inventory data, category is the category to filter by, low_stock_only is a flag to include only low-stock items, start_date is the start date for filtering, end_date is the end date for filtering
-@return -- a DataFrame containing the generated report
-"""
 def generate_report(
     df: pd.DataFrame,
     category: str | None = None,
@@ -20,10 +15,15 @@ def generate_report(
     if low_stock_only:
         report_df = report_df[report_df["Quantity"] < 5]
 
-    if start_date:
-        report_df = report_df[report_df["DateAdded"] >= pd.to_datetime(start_date)]
-
-    if end_date:
-        report_df = report_df[report_df["DateAdded"] <= pd.to_datetime(end_date)]
+    if "DateAdded" in report_df.columns and report_df["DateAdded"].dt.tz is not None:
+        if start_date:
+            report_df = report_df[report_df["DateAdded"] >= pd.to_datetime(start_date).tz_localize("UTC")]
+        if end_date:
+            report_df = report_df[report_df["DateAdded"] <= pd.to_datetime(end_date).tz_localize("UTC")]
+    else:
+        if start_date:
+            report_df = report_df[report_df["DateAdded"] >= pd.to_datetime(start_date)]
+        if end_date:
+            report_df = report_df[report_df["DateAdded"] <= pd.to_datetime(end_date)]
 
     return report_df.sort_values("DateAdded", ascending=False)

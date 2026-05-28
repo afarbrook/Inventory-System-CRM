@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import date
 from utils.reports import generate_report
 from utils.excel import load_inventory
 
@@ -10,8 +11,10 @@ st.set_page_config(page_title="Inventory Reports", layout="wide")
 st.header("📄 Inventory Reports")
 df = load_inventory()
 
-categories = ["All"] + sorted(df["Category"].dropna().unique().tolist())
- 
+df["DateAdded"] = pd.to_datetime(df["DateAdded"], errors="coerce")
+
+categories = ["All"] + sorted(df["Category"].dropna().astype(str).unique().tolist())
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -21,9 +24,14 @@ with col2:
     low_stock = st.checkbox("Low stock only (< 5)")
 
 with col3:
+    min_date = df["DateAdded"].min()
+    max_date = df["DateAdded"].max()
+    min_date = min_date.date() if pd.notna(min_date) else date.today()
+    max_date = max_date.date() if pd.notna(max_date) else date.today()
+
     date_range = st.date_input(
         "Date range",
-        value=(df["DateAdded"].min(), df["DateAdded"].max())
+        value=(min_date, max_date)
     )
 
 start_date, end_date = date_range

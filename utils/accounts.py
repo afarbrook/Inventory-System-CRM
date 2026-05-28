@@ -1,11 +1,10 @@
 import bcrypt
-import pandas as pd
 import streamlit as st
+import pandas as pd
 from utils.excel import get_supabase
 
 def login(username, password) -> bool:
     supabase = get_supabase()
-    st.write(supabase.rest_url)  # temporary debug
     response = supabase.table("Login_info").select("Password").eq("Username", username).execute()
     if not response.data:
         return False
@@ -17,7 +16,7 @@ def createAccount(username, password):
     supabase.table("Login_info").insert({
         "Username": username,
         "Password": hashPassword(password.encode()),
-        "Role": "user"
+        "Admin": False
     }).execute()
 
 def hashPassword(password):
@@ -28,14 +27,14 @@ def hashPassword(password):
 def checkAdmin():
     supabase = get_supabase()
     username = st.session_state["username"]
-    response = supabase.table("Login_info").select("Role").eq("Username", username).execute()
+    response = supabase.table("Login_info").select("Admin").eq("Username", username).execute()
     if not response.data:
         return False
-    return response.data[0]["Role"] == "admin"
+    return response.data[0]["Admin"] == True
 
 def load_users() -> pd.DataFrame:
     supabase = get_supabase()
-    response = supabase.table("Login_info").select("Username, Role").execute()
+    response = supabase.table("Login_info").select("Username", "Admin").execute()
     if not response.data:
-        return pd.DataFrame(columns=["Username", "Role"])
+        return pd.DataFrame(columns=["Username", "Admin"])
     return pd.DataFrame(response.data)

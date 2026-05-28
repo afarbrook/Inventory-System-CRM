@@ -7,6 +7,7 @@ if not st.session_state["logged in"]:
     st.stop()
 
 df = load_inventory()
+df["Quantity"] = pd.to_numeric(df["Quantity"], errors="coerce").fillna(0).astype(int)
 st.set_page_config(page_title="Inventory Search", layout="wide")
 st.title("Inventory Search")
 st.divider()
@@ -22,7 +23,7 @@ with col2:
     min_qty = st.number_input("Min Quantity", min_value=0, value=0)
 
 with col3:
-    max_qty = st.number_input("Max Quantity", min_value=0, value=int(df["Quantity"].max()))
+    max_qty = st.number_input("Max Quantity", min_value=0, value=int(df["Quantity"].fillna(0).max()))
 
 filtered_df = df.copy()
 
